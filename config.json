@@ -8,9 +8,9 @@
 	},
 	"env": [
 		{
-			"name": "SERVER_ADDR",
-			"description": "Address of server to post logs",
-			"value": "http://localhost:9999/logs",
+			"name": "LOG_LEVEL",
+			"description": "Set log level to output for plugin logs",
+			"value": "info",
 			"settable": ["value"]
 		}
 	]
