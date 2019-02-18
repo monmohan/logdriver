@@ -1,0 +1,19 @@
+{
+	"description": "Simple Log Driver as plugin",
+	"documentation": "-",
+	"entrypoint": ["/usr/bin/docker-log-driver"],
+	"interface": {
+		"types": ["docker.logdriver/1.0"],
+		"socket": "mylogdriver.sock"
+	},
+	"env": [
+		{
+			"name": "SERVER_ADDR",
+			"description": "Address of server to post logs",
+			"value": "http://localhost:9999/logs",
+			"settable": ["value"]
+		}
+	]
+}
+
+

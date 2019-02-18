@@ -1,0 +1,4 @@
+FROM  golang:1.8
+
+COPY . /go/src/github.com/monmohan/docker-log-driver
+RUN cd /go/src/github.com/monmohan/docker-log-driver && go get && go build --ldflags '-extldflags "-static"' -o /usr/bin/docker-log-driver
