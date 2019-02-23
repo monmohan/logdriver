@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -40,12 +39,6 @@ func handlers(h *sdk.Handler, d *driver) {
 			return
 		}
 		fmt.Fprintln(os.Stdout, "Start logging request was called for the container : ", req.Info.ContainerID)
-
-		if req.Info.ContainerID == "" {
-			respond(errors.New("must provide container id in log context"), w)
-			return
-		}
-
 		err := d.StartLogging(req.File, req.Info)
 		respond(err, w)
 	})
