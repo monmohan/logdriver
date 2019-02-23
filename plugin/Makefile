@@ -1,19 +1,17 @@
 # Plugin parameters
 PLUGIN_NAME=monmohan/tldriver
-PLUGIN_TAG=1.0.0
+PLUGIN_TAG=v1
 
-all: clean docker rootfs create
+all: clean build-image create-plugin
 
 clean:
-	@echo "### rm ./plugin-build"
+	@echo "Removing plugin build directory"
 	rm -rf ./plugin-build
 
-docker:
-	@echo "### docker build: rootfs image with the plugin"
+build-image:
+	@echo "docker build: rootfs image with the plugin"
 	docker build -f Dockerfile.build -t ${PLUGIN_NAME}:rootfs .
-
-rootfs:
-	@echo "### create rootfs directory in ./plugin/rootfs"
+	@echo "### create rootfs directory in ./plugin-build/rootfs"
 	mkdir -p ./plugin-build/rootfs
 	docker create --name tmprootfs ${PLUGIN_NAME}:rootfs
 	docker export tmprootfs | tar -x -C ./plugin-build/rootfs
@@ -21,16 +19,13 @@ rootfs:
 	cp config.json ./plugin-build/
 	docker rm -vf tmprootfs
 
-create:
+create-plugin:
 	@echo "### remove existing plugin ${PLUGIN_NAME}:${PLUGIN_TAG} if exists"
 	docker plugin rm -f ${PLUGIN_NAME}:${PLUGIN_TAG} || true
 	@echo "### create new plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin-build"
 	docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin-build
-
-enable:
 	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}
 
-push: clean docker rootfs create enable
-	@echo "### push plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
-	docker plugin push ${PLUGIN_NAME}:${PLUGIN_TAG}
+
+	
