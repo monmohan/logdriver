@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/docker/docker/daemon/logger"
 	"github.com/docker/docker/pkg/ioutils"
@@ -37,6 +39,8 @@ func handlers(h *sdk.Handler, d *driver) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		fmt.Fprintln(os.Stdout, "Start logging request was called for the container : ", req.Info.ContainerID)
+
 		if req.Info.ContainerID == "" {
 			respond(errors.New("must provide container id in log context"), w)
 			return
@@ -52,6 +56,7 @@ func handlers(h *sdk.Handler, d *driver) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		fmt.Fprintln(os.Stdout, "Stop logging request was called for the container")
 		err := d.StopLogging(req.File)
 		respond(err, w)
 	})
@@ -68,6 +73,8 @@ func handlers(h *sdk.Handler, d *driver) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		fmt.Fprintln(os.Stdout, "docker logs was called for the container : ", req.Info.ContainerID)
 
 		stream, err := d.ReadLogs(req.Info, req.Config)
 		if err != nil {

@@ -102,7 +102,7 @@ func consumeLog(lf *logPair) {
 			dec = protoio.NewUint32DelimitedReader(lf.stream, binary.BigEndian, 1e6)
 		}
 		var msg logger.Message
-		msg.Line = []byte(strings.Join([]string{string(buf.Line), "YUKE: "}, ":"))
+		msg.Line = []byte(strings.Join([]string{string(buf.Line), "Plugin: "}, ":"))
 		msg.Source = buf.Source
 		//msg.Partial = buf.Partial
 		msg.Timestamp = time.Unix(0, buf.TimeNano)
