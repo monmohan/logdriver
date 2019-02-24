@@ -17,5 +17,6 @@ func main() {
 		fmt.Fprintf(w, "echo %v", r.URL.Path)
 
 	})
-	log.Fatal(http.ListenAndServe(":9090", nil))
+	log.Printf("Starting server on host %v  and port %v", "localhost", 9000)
+	log.Fatal(http.ListenAndServe(":9000", nil))
 }

@@ -29,7 +29,7 @@ func main() {
 
 	h := sdk.NewHandler(`{"Implements": ["LoggingDriver"]}`)
 	handlers(&h, newDriver())
-	if err := h.ServeUnix("jsonfile", 0); err != nil {
+	if err := h.ServeUnix("mylogdriver", 0); err != nil {
 		panic(err)
 	}
 }

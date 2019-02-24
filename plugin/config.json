@@ -4,7 +4,7 @@
 	"entrypoint": ["/usr/bin/docker-log-driver"],
 	"interface": {
 		"types": ["docker.logdriver/1.0"],
-		"socket": "jsonfile.sock"
+		"socket": "mylogdriver.sock"
 	},
 	"env": [
 		{
