@@ -3,13 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/docker/docker/daemon/logger"
-	"github.com/docker/docker/pkg/ioutils"
 	"github.com/docker/go-plugins-helpers/sdk"
 )
 
@@ -34,23 +32,11 @@ type ReadLogsRequest struct {
 
 func handlers(h *sdk.Handler, d *driver) {
 	h.HandleFunc("/LogDriver.StartLogging", func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			fmt.Fprintf(os.Stdout, "Error in reading request", err.Error())
-		}
-
+		body, _ := ioutil.ReadAll(r.Body)
 		var req StartLoggingRequest
-		/*if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}*/
 		fmt.Fprintf(os.Stdout, "Start logging request was called for the container : %s", body)
-		err = json.Unmarshal(body, &req)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error in unmarshalling request :%s", err.Error())
-		}
-
-		err = d.StartLogging(req.File, req.Info)
+		json.Unmarshal(body, &req)
+		err := d.StartLogging(req.File, req.Info)
 		respond(err, w)
 	})
 
@@ -67,7 +53,7 @@ func handlers(h *sdk.Handler, d *driver) {
 
 	h.HandleFunc("/LogDriver.Capabilities", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&CapabilitiesResponse{
-			Cap: logger.Capability{ReadLogs: true},
+			Cap: logger.Capability{ReadLogs: false},
 		})
 	})
 
@@ -79,17 +65,8 @@ func handlers(h *sdk.Handler, d *driver) {
 		}
 
 		fmt.Fprintln(os.Stdout, "docker logs was called for the container : ", req.Info.ContainerID)
+		http.Error(w, "Not implemented", http.StatusNotImplemented)
 
-		stream, err := d.ReadLogs(req.Info, req.Config)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer stream.Close()
-
-		w.Header().Set("Content-Type", "application/x-json-stream")
-		wf := ioutils.NewWriteFlusher(w)
-		io.Copy(wf, stream)
 	})
 }
 

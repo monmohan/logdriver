@@ -16,17 +16,8 @@ var logLevels = map[string]logrus.Level{
 }
 
 func main() {
-	levelVal := os.Getenv("LOG_LEVEL")
-	if levelVal == "" {
-		levelVal = "info"
-	}
-	if level, exists := logLevels[levelVal]; exists {
-		logrus.SetLevel(level)
-	} else {
-		fmt.Fprintln(os.Stderr, "invalid log level: ", levelVal)
-		os.Exit(1)
-	}
-
+	cfgVal := os.Getenv("SOME_CFG_FOR_PLUGIN")
+	fmt.Fprintln(os.Stdout, "A config value ", cfgVal)
 	h := sdk.NewHandler(`{"Implements": ["LoggingDriver"]}`)
 	handlers(&h, newDriver())
 	if err := h.ServeUnix("mylogdriver", 0); err != nil {

@@ -12,11 +12,15 @@ func main() {
 		fmt.Fprintln(os.Stdout, "Receieved request: ", r.URL.Path)
 
 		for hk, hv := range r.Header {
-			fmt.Fprintln(os.Stdout, "Header", hk, hv)
+			fmt.Fprintf(os.Stdout, "%s=%s\n", hk, hv)
 		}
 		fmt.Fprintf(w, "echo %v", r.URL.Path)
 
 	})
-	log.Printf("Starting server on host %v  and port %v", "localhost", 9000)
-	log.Fatal(http.ListenAndServe(":9000", nil))
+	var port string
+	if port = os.Getenv("HTTP_PORT"); port == "" {
+		port = "9000"
+	}
+	log.Printf("Starting server on host %v  and port %v", "localhost", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
