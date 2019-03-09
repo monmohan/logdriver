@@ -4,13 +4,13 @@
 	"entrypoint": ["/usr/bin/docker-log-driver"],
 	"interface": {
 		"types": ["docker.logdriver/1.0"],
-		"socket": "jsonfile.sock"
+		"socket": "mylogdriver.sock"
 	},
 	"env": [
 		{
-			"name": "LOG_LEVEL",
-			"description": "Set log level to output for plugin logs",
-			"value": "info",
+			"name": "SOME_CFG_FOR_PLUGIN",
+			"description": "This is how you can set config params for the plugin",
+			"value": "somevalue",
 			"settable": ["value"]
 		}
 	]
