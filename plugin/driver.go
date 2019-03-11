@@ -17,21 +17,18 @@ import (
 )
 
 type driver struct {
-	mu     sync.Mutex
-	logs   map[string]*logPair
-	idx    map[string]*logPair
-	logger logger.Logger
+	mu   sync.Mutex
+	logs map[string]*dockerInput
 }
 
-type logPair struct {
+type dockerInput struct {
 	stream io.ReadCloser
 	info   logger.Info
 }
 
 func newDriver() *driver {
 	return &driver{
-		logs: make(map[string]*logPair),
-		idx:  make(map[string]*logPair),
+		logs: make(map[string]*dockerInput),
 	}
 }
 
@@ -43,30 +40,16 @@ func (d *driver) StartLogging(file string, logCtx logger.Info) error {
 	}
 	d.mu.Unlock()
 
-	/*if logCtx.LogPath == "" {
-		logCtx.LogPath = filepath.Join("/var/log/docker", logCtx.ContainerID)
-	}
-	if err := os.MkdirAll(filepath.Dir(logCtx.LogPath), 0755); err != nil {
-		return errors.Wrap(err, "error setting up logger dir")
-	}
-	l, err := jsonfilelog.New(logCtx)
-	if err != nil {
-		return errors.Wrap(err, "error creating jsonfile logger")
-	}*/
-
-	//logrus.WithField("id", logCtx.ContainerID).WithField("file", file).WithField("logpath", logCtx.LogPath).Debugf("Start logging")
 	f, err := fifo.OpenFifo(context.Background(), file, syscall.O_RDONLY, 0700)
 	if err != nil {
 		return errors.Wrapf(err, "error opening logger fifo: %q", file)
 	}
 
 	d.mu.Lock()
-	lf := &logPair{f, logCtx}
+	lf := &dockerInput{f, logCtx}
 	d.logs[file] = lf
-	d.idx[logCtx.ContainerID] = lf
 	d.mu.Unlock()
 	d.PrintState()
-
 	go consumeLog(lf)
 	return nil
 }
@@ -89,7 +72,7 @@ func (d *driver) StopLogging(file string) error {
 	return nil
 }
 
-func consumeLog(lf *logPair) {
+func consumeLog(lf *dockerInput) {
 	dec := protoio.NewUint32DelimitedReader(lf.stream, binary.BigEndian, 1e6)
 	defer dec.Close()
 	var buf logdriver.LogEntry

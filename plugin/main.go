@@ -4,16 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/docker/go-plugins-helpers/sdk"
 )
-
-var logLevels = map[string]logrus.Level{
-	"debug": logrus.DebugLevel,
-	"info":  logrus.InfoLevel,
-	"warn":  logrus.WarnLevel,
-	"error": logrus.ErrorLevel,
-}
 
 func main() {
 	cfgVal := os.Getenv("SOME_CFG_FOR_PLUGIN")
