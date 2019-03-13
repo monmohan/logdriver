@@ -10,14 +10,14 @@ clean:
 
 build-image:
 	@echo "docker build: rootfs image with the plugin"
-	docker build -f Dockerfile.build -t ${PLUGIN_NAME}:rootfs .
+	docker build -f Dockerfile.build -t ${PLUGIN_NAME}:rootfsimg .
 	@echo "### create rootfs directory in ./plugin-build/rootfs"
 	mkdir -p ./plugin-build/rootfs
-	docker create --name tmprootfs ${PLUGIN_NAME}:rootfs
-	docker export tmprootfs | tar -x -C ./plugin-build/rootfs
+	docker create --name rootfsctr ${PLUGIN_NAME}:rootfsimg
+	docker export rootfsctr | tar -x -C ./plugin-build/rootfs
 	@echo "### copy config.json to ./plugin-build/"
 	cp config.json ./plugin-build/
-	docker rm -vf tmprootfs
+	docker rm -vf rootfsctr
 
 create-plugin:
 	@echo "### remove existing plugin ${PLUGIN_NAME}:${PLUGIN_TAG} if exists"

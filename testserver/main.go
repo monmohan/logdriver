@@ -9,7 +9,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(os.Stdout, "Receieved request: ", r.URL.Path)
+		fmt.Fprintln(os.Stdout, "Received request: ", r.URL.Path)
 
 		for hk, hv := range r.Header {
 			fmt.Fprintf(os.Stdout, "%s=%s\n", hk, hv)
